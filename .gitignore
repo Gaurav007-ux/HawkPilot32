@@ -1,0 +1,32 @@
+# ============================================
+#   HawkPilot32 - .gitignore
+# ============================================
+
+# --- Arduino / STM32 Build Artifacts ---
+build/
+bin/
+out/
+*.hex
+*.bin
+*.elf
+*.o
+*.d
+*.a
+*.map
+
+# --- IDE Configs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.agents/
+
+# --- OS / System files ---
+Thumbs.db
+.DS_Store
+desktop.ini
+*.log
+*.tmp
+*.bak
+*.orig
