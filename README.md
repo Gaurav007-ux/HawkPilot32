@@ -81,90 +81,44 @@ The flight controller maps the following I/O pins on the STM32F103C8T6 microcont
 
 ---
 
-## 🔌 Circuit Schematic Diagram
+## 🛠️ Hardware Requirements
 
-The following diagram illustrates the physical wiring connections of the flight controller components:
+### Used Hardware
+* **Microcontroller (MCU):** STM32F103C8T6 (Blue Pill) - 32-bit ARM Cortex-M3 processor (72MHz) providing high-performance 32-bit execution.
+* **IMU (Gyro + Accelerometer):** MPU-6050 6-DOF sensor over I2C2.
+* **Magnetometer (Compass):** HMC5883L 3-axis digital compass (for tilt-compensated course heading lock).
+* **Barometer (Altimeter):** BMP280 barometric pressure sensor (for altitude hold control).
+* **GPS Receiver:** ublox BN-880 (with integrated compass) or M8N module (configured for 5Hz NMEA output on USART2).
+* **Telemetry Link:** 915MHz 3DR Radio Telemetry Transceiver (transmitting live logs at 9600 bps via PB0 bitbang).
+* **Radio Control Receiver:** 6-Channel PPM RC Receiver (connected to pin PA0 for input capture decoding).
+* **Power Distribution & ESCs:** 30A Brushless ESCs (with 5V BEC regulator) powering 2200KV brushless motors.
+* **Power Supply:** 3S (11.1V) LiPo battery pack monitored through a 10k:1k resistor voltage divider network on PA4.
 
-```mermaid
-graph TD
-  subgraph STM32_Blue_Pill [STM32F103C8T6 Blue Pill MCU]
-    PA0[PA0 - PPM RX]
-    PA2[PA2 - USART2 TX]
-    PA3[PA3 - USART2 RX]
-    PA4[PA4 - Battery ADC]
-    PB0[PB0 - Telemetry Bitbang]
-    PB3[PB3 - Green LED]
-    PB4[PB4 - Red LED]
-    PB6[PB6 - Timer4 Ch1]
-    PB7[PB7 - Timer4 Ch2]
-    PB8[PB8 - Timer4 Ch3]
-    PB9[PB9 - Timer4 Ch4]
-    PB10[PB10 - I2C2 SCL]
-    PB11[PB11 - I2C2 SDA]
-    PC13[PC13 - Onboard LED]
-    VDD33[3.3V Output Pin]
-    VDD5[5V Input Pin]
-    GND[GND Pin]
-  end
+### Supportive Hardware
+* **Alternative Pressure Sensors:** MS5611, BMP180 barometric sensors.
+* **Alternative Telemetry Modules:** HC-12 433MHz RF wireless modules or Bluetooth transceivers (for short-range configuration and testing).
+* **Standard GPS Modules:** Any standard NMEA-0183 compliant GPS module supporting automatic baud scanning (from 4800 to 115200 bps via the built-in diagnostic utility).
+* **RC Receivers:** Standard PWM receivers (requires an external PWM-to-PPM encoder module).
+* **Alternative Battery Monitoring:** 2S to 4S LiPo configurations (by adjusting the voltage divider scaling variables in the firmware settings).
 
-  subgraph Sensors [I2C Sensor Hub]
-    MPU6050[MPU-6050 Gyro + Accel]
-    HMC5883L[HMC5883L Compass]
-    BMP280[BMP280 Barometer]
-    MPU6050 --- I2C_Bus[I2C Bus: SDA/SCL]
-    HMC5883L --- I2C_Bus
-    BMP280 --- I2C_Bus
-  end
+---
 
-  subgraph Power_System [Power Management & Monitoring]
-    Batt[Battery Pack 3S/4S LiPo]
-    Divider[Voltage Divider: 10K / 1K Resistors]
-    BEC[5V BEC / ESC Regulator]
-  end
+## 📸 Hardware Setup & Circuit Images
 
-  subgraph Actuators [Electronic Speed Controllers]
-    ESC1[ESC 1 - Front-Right CCW]
-    ESC2[ESC 2 - Rear-Right CW]
-    ESC3[ESC 3 - Rear-Left CCW]
-    ESC4[ESC 4 - Front-Left CW]
-  end
+Below are the hardware wiring circuit schematics and physical assembly photos:
 
-  subgraph RF_Modules [Wireless & Positioning]
-    RC_Rec[6Ch PPM RC Receiver]
-    Tele[915MHz Telemetry TX]
-    GPS[BN-880 GPS Module]
-  end
+### Circuit Schematic Diagram
+![Circuit Diagram](images/Circuit%20Diagram.png)
 
-  %% I2C Connections
-  I2C_Bus === PB10 & PB11
-  VDD33 === MPU6050 & HMC5883L & BMP280
-
-  %% Peripheral Connections
-  RC_Rec -->|PPM Signal| PA0
-  PB0 -->|9600 bps bitbang| Tele
-  GPS --->|GPS TX -> MCU RX| PA3
-  PA2 --->|MCU TX -> GPS RX| GPS
-
-  %% Power Connections
-  Batt -->|Raw Voltage| Divider
-  Divider -->|Scaled ADC Sense| PA4
-  BEC -->|Regulated 5V| VDD5
-  Batt --> BEC
-
-  %% ESC Connections
-  PB6 -->|PWM Signal 1| ESC1
-  PB7 -->|PWM Signal 2| ESC2
-  PB8 -->|PWM Signal 3| ESC3
-  PB9 -->|PWM Signal 4| ESC4
-
-  %% Status LED Indicators
-  PB3 --> LED_Green((Green LED))
-  PB4 --> LED_Red((Red LED))
-  PC13 --> OnboardLED((PC13 Onboard LED))
-
-  %% Ground bus
-  GND === Batt & RC_Rec & Tele & GPS & ESC1 & ESC2 & ESC3 & ESC4 & MPU6050 & HMC5883L & BMP280 & Divider
-```
+### Assembly & Wiring Photos
+<p align="center">
+  <img src="images/IMG-20260417-WA0009.jpg" width="45%" alt="Hardware Assembly Overview" />
+  <img src="images/IMG-20260417-WA0010.jpg" width="45%" alt="Flight Controller Setup" />
+</p>
+<p align="center">
+  <img src="images/IMG-20260417-WA0011.jpg" width="45%" alt="Sensors & GPS Connection" />
+  <img src="images/IMG-20260417-WA0012.jpg" width="45%" alt="Quadcopter Frame Assembly" />
+</p>
 
 ---
 
